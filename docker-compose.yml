@@ -1,0 +1,42 @@
+
+
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:6
+    container_name: mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    build: ./server
+    container_name: backend
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./config/.env
+    volumes:
+      - ./server:/app
+    depends_on:
+      - mongo
+    command: node src/index.js
+
+  frontend:
+    build: ./client
+    container_name: frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client:/app
+    command: npm run dev
+    stdin_open: true
+    tty: true
+
+volumes:
+  mongo_data:
