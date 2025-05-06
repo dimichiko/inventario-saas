@@ -1,19 +1,27 @@
-import { useEffect, useState } from 'react'
+// ProductList.jsx
+import { useState } from 'react'
 import api from '../api'
 
-function ProductList() {
-  const [products, setProducts] = useState([])
+function ProductList({ products, onDelete, onUpdate }) {
+  const [editing, setEditing] = useState(null)
+  const [editForm, setEditForm] = useState({})
 
-  useEffect(() => {
-    fetchProducts()
-  }, [])
+  const startEdit = (product) => {
+    setEditing(product._id)
+    setEditForm(product)
+  }
 
-  const fetchProducts = async () => {
+  const handleEditChange = e => {
+    setEditForm({ ...editForm, [e.target.name]: e.target.value })
+  }
+
+  const submitEdit = async (id) => {
     try {
-      const res = await api.get('/api/products')
-      setProducts(res.data)
+      const { data } = await api.put(`/api/products/${id}`, editForm)
+      onUpdate(data)
+      setEditing(null)
     } catch (err) {
-      console.error('Error al obtener productos:', err)
+      console.error('Error actualizando producto', err)
     }
   }
 
@@ -34,14 +42,29 @@ function ProductList() {
           {products.length > 0 ? (
             products.map(p => (
               <tr key={p._id}>
-                <td>{p.name}</td>
-                <td>{p.quantity}</td>
-                <td>${p.price}</td>
-                <td>{p.category}</td>
-                <td>
-                  <button>Editar</button>
-                  <button>Eliminar</button>
-                </td>
+                {editing === p._id ? (
+                  <>
+                    <td><input name="name" value={editForm.name} onChange={handleEditChange} /></td>
+                    <td><input name="quantity" type="number" value={editForm.quantity} onChange={handleEditChange} /></td>
+                    <td><input name="price" type="number" value={editForm.price} onChange={handleEditChange} /></td>
+                    <td><input name="category" value={editForm.category} onChange={handleEditChange} /></td>
+                    <td>
+                      <button onClick={() => submitEdit(p._id)}>Guardar</button>
+                      <button onClick={() => setEditing(null)}>Cancelar</button>
+                    </td>
+                  </>
+                ) : (
+                  <>
+                    <td>{p.name}</td>
+                    <td>{p.quantity}</td>
+                    <td>${p.price}</td>
+                    <td>{p.category}</td>
+                    <td>
+                      <button onClick={() => startEdit(p)}>Editar</button>
+                      <button onClick={() => onDelete(p._id)}>Eliminar</button>
+                    </td>
+                  </>
+                )}
               </tr>
             ))
           ) : (
