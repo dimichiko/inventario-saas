@@ -1,42 +1,44 @@
-
-
 version: '3.8'
-
 services:
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongo:27017/inventario
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+
   mongo:
-    image: mongo:6
-    container_name: mongo
-    restart: unless-stopped
+    image: mongo
     ports:
       - "27017:27017"
     volumes:
-      - mongo_data:/data/db
+      - mongodb_data:/data/db
+    networks:
+      - app-network
 
-  backend:
-    build: ./server
-    container_name: backend
-    restart: unless-stopped
-    ports:
-      - "4000:4000"
-    env_file:
-      - ./config/.env
-    volumes:
-      - ./server:/app
-    depends_on:
-      - mongo
-    command: node src/index.js
-
-  frontend:
-    build: ./client
-    container_name: frontend
-    restart: unless-stopped
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./client:/app
-    command: npm run dev
-    stdin_open: true
-    tty: true
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
-  mongo_data:
+  mongodb_data:
