@@ -1,60 +1,44 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import Navbar from './components/layout/Navbar';
-import Login from './components/auth/Login';
-import Register from './components/auth/Register';
-import ProductList from './components/products/ProductList';
-import ProductForm from './components/products/ProductForm';
-import Analyzer from './components/Analyzer';
-import PrivateRoute from './components/routing/PrivateRoute';
-import Dashboard from './components/Dashboard';
-import Home from './components/Home';
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import Navbar from "./components/layout/Navbar";
+import Home from "./components/Home";
+import Dashboard from "./components/Dashboard";
+import Login from "./components/auth/Login";
+import Register from "./components/auth/Register";
+import ProductList from "./components/products/ProductList";
+import ProductForm from "./components/products/ProductForm";
+import Analyzer from "./components/Analyzer";
+import PrivateRoute from "./components/routing/PrivateRoute";
 
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen bg-gray-100">
+        <div className="flex flex-col min-h-screen bg-gray-50">
           <Navbar />
-          <div className="container mx-auto px-4 py-8">
+          <main className="flex-grow">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route 
-                path="/dashboard" 
-                element={
-                  <PrivateRoute>
-                    <Dashboard />
-                  </PrivateRoute>
-                } 
-              />
-              <Route 
-                path="/products" 
-                element={
-                  <PrivateRoute>
-                    <ProductList />
-                  </PrivateRoute>
-                } 
-              />
-              <Route 
-                path="/products/new" 
-                element={
-                  <PrivateRoute>
-                    <ProductForm />
-                  </PrivateRoute>
-                } 
-              />
-              <Route 
-                path="/analyze" 
-                element={
-                  <PrivateRoute>
-                    <Analyzer />
-                  </PrivateRoute>
-                } 
-              />
+              
+              {/* Rutas protegidas */}
+              <Route element={<PrivateRoute />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/products" element={<ProductList />} />
+                <Route path="/products/new" element={<ProductForm />} />
+                <Route path="/analyze" element={<Analyzer />} />
+              </Route>
+              
+              {/* Ruta de fallback */}
+              <Route path="*" element={<Navigate to="/" />} />
             </Routes>
-          </div>
+          </main>
+          <footer className="bg-gray-800 text-white py-6">
+            <div className="container mx-auto px-4 text-center">
+              <p>© {new Date().getFullYear()} Inventario SaaS. Todos los derechos reservados.</p>
+            </div>
+          </footer>
         </div>
       </Router>
     </AuthProvider>
