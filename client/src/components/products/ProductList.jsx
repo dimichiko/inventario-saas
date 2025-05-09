@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../api';
+import React from 'react';
 
 function ProductList() {
   const [products, setProducts] = useState([]);
