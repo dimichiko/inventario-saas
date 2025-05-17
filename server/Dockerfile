@@ -7,7 +7,8 @@ COPY package*.json ./
 # Asegurarnos de usar bcryptjs en lugar de bcrypt
 RUN sed -i 's/"bcrypt"/"bcryptjs"/g' package.json || echo "bcrypt not found in package.json"
 
-RUN yarn install --production --frozen-lockfile --ignore-optional
+# Instalación limpia usando npm
+RUN npm ci --omit=dev
 
 COPY . .
 

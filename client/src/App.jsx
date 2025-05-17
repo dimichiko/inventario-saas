@@ -14,6 +14,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
+        <div className="bg-red-500 text-white p-4">Tailwind está funcionando</div>
         <div className="flex flex-col min-h-screen bg-gray-50">
           <Navbar />
           <main className="flex-grow">

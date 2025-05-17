@@ -8,25 +8,28 @@ services:
       - "5173:5173"
     environment:
       - NODE_ENV=production
+      - VITE_API_URL=http://backend:4000
     depends_on:
       - backend
     networks:
       - app-network
+    restart: unless-stopped
 
   backend:
     build:
       context: ./server
       dockerfile: Dockerfile
     ports:
-      - "4000:4000"  # Cambiado de 3000:3000 a 4000:4000 para coincidir con .env
+      - "4000:4000"
     environment:
       - NODE_ENV=production
       - MONGODB_URI=mongodb://mongo:27017/inventario
-      - PORT=4000  # Añadido para asegurar que se use el puerto correcto
+      - PORT=4000
     depends_on:
       - mongo
     networks:
       - app-network
+    restart: unless-stopped
 
   mongo:
     image: mongo
@@ -42,4 +45,4 @@ networks:
     driver: bridge
 
 volumes:
-  mongodb_data:/server/src/routes/auth.j
+  mongodb_data:

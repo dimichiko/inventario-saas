@@ -3,7 +3,7 @@ FROM node:18.20.2
 WORKDIR /app
 
 COPY package*.json .npmrc ./
-RUN npm install
+RUN npm ci --omit=dev
 
 COPY . .
 

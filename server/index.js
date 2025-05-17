@@ -35,6 +35,9 @@ app.post('/analyze', (req, res) => {
   res.json({ message: 'Texto recibido correctamente ✅', text });
 });
 
+// Línea de depuración añadida aquí:
+console.log("Intentando conectar con MONGODB_URI:", process.env.MONGODB_URI);
+
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
